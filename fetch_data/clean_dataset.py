@@ -1,9 +1,13 @@
 import pandas as pd
-import gspread # pip install gspread
-from gspread import get_as_dataframe, set_with_dataframe
+
+# pip install gspread if required
+import gspread
+
+# pip install gspread_dataframe if required
+from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
 
-gc = gspread.service_account(filename='cow_disease_detection\credentials.json')
+gc = gspread.service_account(filename="./fetch_data/credentials.json")
 sh = gc.open_by_key("1AJSGHiLQvwlPYY7RPyS7nlYwLmof70DC-NVHT-o7QtE")
 worksheet = sh.sheet1
 
@@ -14,27 +18,31 @@ sheet1_df = sheet1_df.dropna()
 
 # Average Temperature and movement of cow per day
 
-date_df = sheet1_df['date'].drop_duplicates()
+date_df = sheet1_df["date"].drop_duplicates()
 days_temperature_avg = []
 days_X_axis_avg = []
 days_Y_axis_avg = []
 days_Z_axis_avg = []
 for x in date_df:
-    days_data = sheet1_df.loc[sheet1_df['date'] == x]
-    days_temperature_avg.append(days_data['temperature'].sum() / len(days_data['temperature']))
-    days_X_axis_avg.append(days_data['x_axix'].sum() / len(days_data['x_axix']))
-    days_Y_axis_avg.append(days_data['y_axix'].sum() / len(days_data['y_axix']))
-    days_Z_axis_avg.append(days_data['z_axix'].sum() / len(days_data['z_axix']))
+    days_data = sheet1_df.loc[sheet1_df["date"] == x]
+    days_temperature_avg.append(
+        days_data["temperature"].sum() / len(days_data["temperature"])
+    )
+    days_X_axis_avg.append(days_data["x_axix"].sum() / len(days_data["x_axix"]))
+    days_Y_axis_avg.append(days_data["y_axix"].sum() / len(days_data["y_axix"]))
+    days_Z_axis_avg.append(days_data["z_axix"].sum() / len(days_data["z_axix"]))
 
-df = pd.DataFrame({
-    'Date': date_df,
-    'Temperature_avg': days_temperature_avg,
-    'X_axis_avg': days_X_axis_avg,
-    'Y_axis_avg': days_Y_axis_avg,
-    'Z_axis_avg': days_Z_axis_avg
-})
+df = pd.DataFrame(
+    {
+        "Date": date_df,
+        "Temperature_avg": days_temperature_avg,
+        "X_axis_avg": days_X_axis_avg,
+        "Y_axis_avg": days_Y_axis_avg,
+        "Z_axis_avg": days_Z_axis_avg,
+    }
+)
 df = df.round(2)
 
 # Final dataset
 print(df)
-df.to_csv('file1_test.csv', index=False)
+df.to_csv("./data/from_fetch_data.csv", index=False)
