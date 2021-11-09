@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-df = pd.read_csv("file2.csv")
+df = pd.read_csv("./data/from_fetch_data.csv")
 x = df['Date']
 y = df['Temperature_avg']
 plt.figure(figsize=(9, 5))
