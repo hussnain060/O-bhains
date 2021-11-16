@@ -17,13 +17,20 @@ df = get_as_dataframe(worksheet)
 df = df.iloc[:, :6]
 df = df.dropna()
 
-df['date'] = pd.to_datetime(df['date'] + ' ' + df['time'])  # concatenate date and time column
-df = df.drop('time', axis=1)
-df = df.rename(columns={'date': 'datetime'})
+df["date"] = pd.to_datetime(
+    df["date"] + " " + df["time"]
+)  # concatenate date and time column
+df = df.drop("time", axis=1)
+df = df.rename(columns={"date": "datetime"})
 
 # passing arguments to average dataset
 parse = argparse.ArgumentParser(description="modify dataset")
-parse.add_argument("--average_by", type=str, help="Average dataset by days/hours/no average", choices=['days', 'hours', 'no avg'])
+parse.add_argument(
+    "--average_by",
+    type=str,
+    help="Average dataset by days/hours/no average",
+    choices=["days", "hours", "no avg"],
+)
 
 
 def avg(average, dataset):
@@ -34,9 +41,13 @@ def avg(average, dataset):
     update_df = dataset
     times = pd.DatetimeIndex(dataset.datetime)
     if average == "days":  # Average Temperature and movement of cow per days
-        update_df = dataset.groupby([times.date])[['temperature','x_axix','y_axix','z_axix']].median()
+        update_df = dataset.groupby([times.date])[
+            ["temperature", "x_axix", "y_axix", "z_axix"]
+        ].median()
     elif average == "hours":  # Average Temperature and movement of cow per hours
-        update_df = dataset.groupby([times.date, times.hour])[['temperature','x_axix','y_axix','z_axix']].median()
+        update_df = dataset.groupby([times.date, times.hour])[
+            ["temperature", "x_axix", "y_axix", "z_axix"]
+        ].median()
 
     return update_df
 
