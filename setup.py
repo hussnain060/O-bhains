@@ -21,7 +21,7 @@ setup(
     # long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
-    install_requires=["pandas", "numpy", "gspread", "gspread-dataframe",],
+    install_requires=["pandas", "numpy", "gspread", "gspread-dataframe", "pytest"],
     keywords=["python", "video", "stream", "video stream", "camera stream", "sockets"],
     classifiers=[
         "Development Status :: 1 - Planning",
