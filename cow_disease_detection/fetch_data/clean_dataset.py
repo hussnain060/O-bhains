@@ -17,6 +17,7 @@ NULL
 
 """
 
+
 def get_data():
     """Getting data form google sheet.
 
@@ -36,7 +37,9 @@ def get_data():
     >>> get_data()
     'Dataframe'
     """
-    gc = gspread.service_account(filename="./fetch_data/credentials.json")
+    gc = gspread.service_account(
+        filename="./cow_disease_detection/fetch_data/credentials.json"
+    )
     sh = gc.open_by_key("1AJSGHiLQvwlPYY7RPyS7nlYwLmof70DC-NVHT-o7QtE")
     worksheet = sh.sheet1
     df = get_as_dataframe(worksheet)
@@ -73,6 +76,7 @@ def data_preprocessing():
     df = df.rename(columns={"date": "datetime"})
     return df
 
+
 # passing arguments to average dataset
 parse = argparse.ArgumentParser(description="modify dataset")
 parse.add_argument(
@@ -82,7 +86,8 @@ parse.add_argument(
     choices=["days", "hours", "no avg"],
 )
 
-def avg(average):
+
+def calculate_average(average):
     """This function is used for Average Temperature and movement of cow per days/per hours.
     This function run at the start of the program and we give one argument so that function
     run properly.
@@ -101,7 +106,7 @@ def avg(average):
 
     Example
     --------
-    >>> avg(days/hours/no avg)
+    >>> calculate_average(days/hours/no avg)
     'Dataframe'
     """
     update_df = data_preprocessing()
@@ -118,11 +123,11 @@ def avg(average):
 
     # return update_df
 
+
 if __name__ == "__main__":
     arg = parse.parse_args()
-    df = avg('days')
+    df = calculate_average("days")
 
     # Dataset
     print(df.head(10))
-    # print(avg.__doc__)
-    df.to_csv("./data/from_fetch_data.csv", index=False)
+    df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=False)
