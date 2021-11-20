@@ -1,0 +1,8 @@
+LICENCE
+README.md
+setup.py
+cow_disease_detection.egg-info/PKG-INFO
+cow_disease_detection.egg-info/SOURCES.txt
+cow_disease_detection.egg-info/dependency_links.txt
+cow_disease_detection.egg-info/requires.txt
+cow_disease_detection.egg-info/top_level.txt
