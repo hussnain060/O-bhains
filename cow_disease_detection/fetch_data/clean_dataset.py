@@ -110,7 +110,7 @@ def calculate_average(average):
     'Dataframe'
     """
     update_df = data_preprocessing()
-    # times = pd.DatetimeIndex(update_df.datetime)
+    times = pd.DatetimeIndex(update_df.datetime)
     if average == "days":  # Average Temperature and movement of cow per days
         update_df = update_df.groupby(["date"])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
