@@ -3,29 +3,29 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-df = pd.read_csv("./data/from_fetch_data.csv")
-x = df['Date']
-y = df['Temperature_avg']
+df = pd.read_csv("./cow_disease_detection/data/from_fetch_data.csv")
+x = df['days']
+y = df['temperature']
 plt.figure(figsize=(9, 5))
 plt.plot(x, y)
-plt.xlabel('Date')
+plt.xlabel('Days')
 plt.ylabel('Temperature')
 plt.title("Cow Temperature")
 plt.grid(axis='y')
 
-tt = df['Date']
+tt = df['days']
 fig, ax = plt.subplots(figsize=(9, 5))
-ax.plot(tt, df.X_axis_avg, label='x-axis')
-ax.plot(tt, df.Y_axis_avg, label='y-axis')
-ax.plot(tt, df.Z_axis_avg, label='z-axis')
+ax.plot(tt, df.x_axix, label='x-axis')
+ax.plot(tt, df.y_axix, label='y-axis')
+ax.plot(tt, df.z_axix, label='z-axis')
 ax.set_xlabel("Date")
 ax.set_ylabel("Axis")
 ax.set_title("Cow movement along with Axis")
 ax.grid(axis='y')
 ax.legend()
 
-date_per_day = list(df['Date'])
-temperature = list(df['Temperature_avg'])
+date_per_day = list(df['days'])
+temperature = list(df['temperature'])
 
 fig = plt.figure(figsize=(10, 5))
 
