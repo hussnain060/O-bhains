@@ -9,19 +9,22 @@ make csv formate file and stored in data folder.
 
 Example
 -------
-    $ python clean_dataset.py
+    $ python clean_dataset.py --days/hours (optional arguments)
 
 Attributes
 ----------
 NULL
 
+Function
+--------
+1. get_data()
+2. data_preprocessing()
+3. calculate_average()
 """
 
 
-def get_data():
-    """Getting data form google sheet.
-
-    Extended description of function.
+def get_data() -> "DataFrame":
+    """This function Getting data form google sheet.
 
     Parameters
     ----------
@@ -29,8 +32,8 @@ def get_data():
 
     Returns
     -------
-    dataframe
-        return dataset that get from googlesheet.
+    DataFrame
+        This function return a dataset.
 
     Example
     --------
@@ -47,10 +50,8 @@ def get_data():
 
 
 # data preprocessing
-def data_preprocessing():
-    """Data preprocessing.
-
-    Extended description of function.
+def data_preprocessing() -> "DataFrame":
+    """this function preprocess data that get from google sheet.
 
     Parameters
     ----------
@@ -58,8 +59,8 @@ def data_preprocessing():
 
     Returns
     -------
-    dataframe
-        return dataset that get from get_data function.
+    DataFrame
+        This function return a dataset.
 
     Example
     --------
@@ -76,7 +77,6 @@ def data_preprocessing():
     df = df.rename(columns={"date": "datetime"})
     return df
 
-
 # passing arguments to average dataset
 parse = argparse.ArgumentParser(description="modify dataset")
 parse.add_argument(
@@ -86,13 +86,10 @@ parse.add_argument(
     choices=["days", "hours", "no avg"],
 )
 
-
-def calculate_average(average):
+def calculate_average(average: "days/hours") -> "DataFrame":
     """This function is used for Average Temperature and movement of cow per days/per hours.
     This function run at the start of the program and we give one argument so that function
     run properly.
-
-    Extended description of function.
 
     Parameters
     ----------
@@ -101,8 +98,8 @@ def calculate_average(average):
 
     Returns
     -------
-    dataframe
-        return dataset with days average, hours average, or no average.
+    DataFrame
+        This function return dataset of days average, hours average, or no average.
 
     Example
     --------
@@ -112,22 +109,26 @@ def calculate_average(average):
     update_df = data_preprocessing()
     times = pd.DatetimeIndex(update_df.datetime)
     if average == "days":  # Average Temperature and movement of cow per days
-        update_df = update_df.groupby(["date"])[
+        update_df = update_df.groupby([times.date])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
+        update_df.index.name = 'days'
     elif average == "hours":  # Average Temperature and movement of cow per hours
         update_df = update_df.groupby([times.date, times.hour])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
-        pass
+        update_df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=True)
+        update_df = pd.read_csv("./cow_disease_detection/data/from_fetch_data.csv",
+                  sep=',',
+                  names=["days", "hours", "temperature", "x_axix", "y_axix", "z_axix"])
+        update_df.drop(update_df.head(1).index, inplace=True)
 
-    # return update_df
-
+    return update_df
 
 if __name__ == "__main__":
     arg = parse.parse_args()
-    df = calculate_average("days")
+    df = calculate_average(arg.average_by)
 
     # Dataset
     print(df.head(10))
-    df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=False)
+    df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=True)
