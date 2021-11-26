@@ -1,134 +1,152 @@
-import pandas as pd
-import argparse
-import gspread
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
+"""This module is use to access data from google sheet, preprocess data, and stored in data folder.
+Average data by days/hours (if you need).
 
-"""This module is use to access data from google sheet,
-preprocess data, average data by days/hours (if you need),
-make csv formate file and stored in data folder.
+Parameters
+----------
+arg1: string
+    input string (days/hours/no_avg)
+
+Returns
+-------
+dataframe
+    Module return three types of datasets average by days, hours, and no average.
 
 Example
 -------
-    $ python clean_dataset.py --days/hours (optional arguments)
-
-Attributes
-----------
-NULL
-
-Function
---------
-1. get_data()
-2. data_preprocessing()
-3. calculate_average()
+    $ python clean_dataset.py days/hours/no_avg
 """
+import argparse
+from datetime import datetime
+import os
+import pandas as pd
+import gspread
+from gspread_dataframe import get_as_dataframe
 
 
-def get_data() -> "DataFrame":
-    """This function Getting data form google sheet.
+def get_data() -> pd.DataFrame:
+    """This function get data form google sheet.
 
     Parameters
     ----------
-    NULL
+    None
 
     Returns
     -------
-    DataFrame
+    dataframe
         This function return a dataset.
-
-    Example
-    --------
-    >>> get_data()
-    'Dataframe'
     """
-    gc = gspread.service_account(
-        filename="./cow_disease_detection/fetch_data/credentials.json"
+    google_credential: str = gspread.service_account(
+        filename=os.path.join(os.path.dirname(__file__), "credentials.json")
     )
-    sh = gc.open_by_key("1AJSGHiLQvwlPYY7RPyS7nlYwLmof70DC-NVHT-o7QtE")
-    worksheet = sh.sheet1
-    df = get_as_dataframe(worksheet)
-    return df
+    google_sheet: str = google_credential.open_by_key(
+        "1AJSGHiLQvwlPYY7RPyS7nlYwLmof70DC-NVHT-o7QtE"
+    )
+    worksheet = google_sheet.sheet1
+    data_frame_1 = get_as_dataframe(worksheet)
+    return data_frame_1
 
 
 # data preprocessing
-def data_preprocessing() -> "DataFrame":
-    """this function preprocess data that get from google sheet.
+def data_preprocessing() -> pd.DataFrame:
+    """This function preprocess data that get from google sheet.
 
     Parameters
     ----------
-    NULL
+    None
 
     Returns
     -------
-    DataFrame
+    dataframe
         This function return a dataset.
-
-    Example
-    --------
-    >>> data_preprocessing()
-    'Dataframe'
     """
-    df = get_data()
-    df = df.iloc[:, :6]
-    df = df.dropna()
-    df["date"] = pd.to_datetime(
-        df["date"] + " " + df["time"]
-    )  # concatenate date and time column
-    df = df.drop("time", axis=1)
-    df = df.rename(columns={"date": "datetime"})
-    return df
+    data_frame_2 = get_data()
+    data_frame_2 = data_frame_2.iloc[:, :6]
+    data_frame_2 = data_frame_2.dropna()
+    data_frame_2["date"] = pd.to_datetime(
+        data_frame_2["date"]
+        + " "
+        + data_frame_2["time"]
+    ) # concatenate date and time column
+    data_frame_2 = data_frame_2.drop("time", axis=1)
+    data_frame_2 = data_frame_2.rename(columns={"date": "datetime"})
+    return data_frame_2
+
 
 # passing arguments to average dataset
-parse = argparse.ArgumentParser(description="modify dataset")
+parse: str = argparse.ArgumentParser(description="Modify/Average dataset")
 parse.add_argument(
-    "--average_by",
+    "average_by",
     type=str,
-    help="Average dataset by days/hours/no average",
-    choices=["days", "hours", "no avg"],
+    help="Average dataset by days/hours/no_average",
+    choices=["days", "hours", "no_avg"],
 )
 
-def calculate_average(average: "days/hours") -> "DataFrame":
-    """This function is used for Average Temperature and movement of cow per days/per hours.
-    This function run at the start of the program and we give one argument so that function
-    run properly.
+
+def calculate_average(average: str) -> pd.DataFrame:
+    """This function is used to average Temperature and movement of cow per days/per hours.
 
     Parameters
     ----------
-    arg1 : str
-        input data average by (days/hours/no avg)
+    arg1 : string
+        input data average by (days/hours/no_avg)
 
     Returns
     -------
-    DataFrame
-        This function return dataset of days average, hours average, or no average.
-
-    Example
-    --------
-    >>> calculate_average(days/hours/no avg)
-    'Dataframe'
+    dataframe
+        This function return dataset of days average, hours average, or no_average.
     """
-    update_df = data_preprocessing()
-    times = pd.DatetimeIndex(update_df.datetime)
+    data_frame_3 = data_preprocessing()
+    times = pd.DatetimeIndex(data_frame_3.datetime)
     if average == "days":  # Average Temperature and movement of cow per days
-        update_df = update_df.groupby([times.date])[
+        data_frame_3 = data_frame_3.groupby([times.date])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
-        update_df.index.name = 'days'
+        data_frame_3.index.name = "days"
+        print("Dataset average by days:\n")
     elif average == "hours":  # Average Temperature and movement of cow per hours
-        update_df = update_df.groupby([times.date, times.hour])[
+        data_frame_3 = data_frame_3.groupby([times.date, times.hour])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
-        update_df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=True)
-        update_df = pd.read_csv("./cow_disease_detection/data/from_fetch_data.csv",
-                  sep=',',
-                  names=["days", "hours", "temperature", "x_axix", "y_axix", "z_axix"])
-        update_df.drop(update_df.head(1).index, inplace=True)
+        data_frame_3.to_csv(
+            "./cow_disease_detection/data/from_fetch_data.csv", index=True
+        )
+        data_frame_3 = pd.read_csv(
+            "./cow_disease_detection/data/from_fetch_data.csv",
+            sep=",",
+            names=["days", "hours", "temperature", "x_axix", "y_axix", "z_axix"],
+        )
+        data_frame_3.drop([0], inplace=True)
+        print("Dataset average by hours:\n")
+    else:
+        print("No average dataset")
+    return data_frame_3
 
-    return update_df
+
+def args_value(average: str) -> str:
+    """This function get argument value.
+
+    Parameters
+    ----------
+    arg1: average
+        Get string value e.g days/hours/no_avg.
+
+    Returns
+    -------
+    string
+        Function return string value that pass AVG_VALUE variable.
+    """
+    return average
+
 
 if __name__ == "__main__":
-    arg = parse.parse_args()
-    df = calculate_average(arg.average_by)
+    args: str = parse.parse_args()
+    AVG_VALUE: str = args_value(args.average_by)
+    dataset = calculate_average(AVG_VALUE)
 
-    # Dataset
-    print(df.head(10))
-    df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=True)
+    # Display and store dataset
+    print(dataset.head(10))
+    if AVG_VALUE == "days":
+
+        dataset.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=True)
+    else:
+        dataset.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=False)
