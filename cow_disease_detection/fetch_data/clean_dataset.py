@@ -63,10 +63,8 @@ def data_preprocessing() -> pd.DataFrame:
     data_frame_2 = data_frame_2.iloc[:, :6]
     data_frame_2 = data_frame_2.dropna()
     data_frame_2["date"] = pd.to_datetime(
-        data_frame_2["date"]
-        + " "
-        + data_frame_2["time"]
-    ) # concatenate date and time column
+        data_frame_2["date"] + " " + data_frame_2["time"]
+    )  # concatenate date and time column
     data_frame_2 = data_frame_2.drop("time", axis=1)
     data_frame_2 = data_frame_2.rename(columns={"date": "datetime"})
     return data_frame_2
