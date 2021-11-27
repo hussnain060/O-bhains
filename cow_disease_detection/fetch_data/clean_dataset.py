@@ -78,18 +78,35 @@ def data_preprocessing() -> "DataFrame":
     return df
 
 
-# passing arguments to average dataset
-parse = argparse.ArgumentParser(description="summarize the dataset by average")
-parse.add_argument(
-    "-a",
-    "--average_by",
-    type=str,
-    required=False,
-    default="day",
-    dest="average_by",
-    help="Average dataset by days/hours/no average",
-    choices="month,week,day,hour,minute,none",
-)
+def argument_parser():
+    """This function captures the comandline arguments for clean_dataset module"""
+    # passing arguments to average dataset
+    parse = argparse.ArgumentParser(description="summarize the dataset by average")
+
+    # summary option
+    parse.add_argument(
+        "-a",
+        "--average_by",
+        type=str,
+        required=False,
+        default="day",
+        dest="average_by",
+        help="Summarized the data by average",
+        choices=["month", "week", "day", "hour", "minute", "none"],
+    )
+
+    #
+    parse.add_argument(
+        "-f",
+        "--from_date",
+        type=str,
+        required=False,
+        default="2021-01-01",
+        dest="pull_data_from_date",
+        help="To pull historical data from a specific date  e.g 2021-12-31",
+    )
+
+    return parse
 
 
 def calculate_average(average: "days/hours") -> "DataFrame":
