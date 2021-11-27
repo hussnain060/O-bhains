@@ -106,17 +106,17 @@ def argument_parser():
         help="To pull historical data from a specific date  e.g 2021-12-31",
     )
 
-    return parse
+    return parse.parse_args()
 
 
-def calculate_average(average: "days/hours") -> "DataFrame":
+def calculate_average(average_by: str) -> pd.DataFrame:
     """This function is used for Average Temperature and movement of cow per days/per hours.
     This function run at the start of the program and we give one argument so that function
     run properly.
 
     Parameters
     ----------
-    arg1 : str
+    average_by : str
         input data average by (days/hours/no avg)
 
     Returns
@@ -131,12 +131,12 @@ def calculate_average(average: "days/hours") -> "DataFrame":
     """
     update_df = data_preprocessing()
     times = pd.DatetimeIndex(update_df.datetime)
-    if average == "days":  # Average Temperature and movement of cow per days
+    if average_by == "days":  # Average Temperature and movement of cow per days
         update_df = update_df.groupby([times.date])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
         update_df.index.name = "days"
-    elif average == "hours":  # Average Temperature and movement of cow per hours
+    elif average_by == "hours":  # Average Temperature and movement of cow per hours
         update_df = update_df.groupby([times.date, times.hour])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
@@ -152,8 +152,8 @@ def calculate_average(average: "days/hours") -> "DataFrame":
 
 
 if __name__ == "__main__":
-    arg = parse.parse_args()
-    df = calculate_average(arg.average_by)
+    arguments = argument_parser()
+    df = calculate_average(average_by=arguments.average_by)
 
     # Dataset
     print(df.head(10))
