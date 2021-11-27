@@ -14,9 +14,11 @@ class Config:
 
     """
 
-    # configure data pull option
-    pull_data_from_date: str = "2021-01-01"
+    def __init__(self):
 
-    # configure summary options
-    average_by: str = "day"
+        # configure data pull option
+        self.pull_data_from_date: str = "2021-01-01"
+
+        # configure summary options
+        self.average_by: str = "day"
 

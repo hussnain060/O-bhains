@@ -77,14 +77,20 @@ def data_preprocessing() -> "DataFrame":
     df = df.rename(columns={"date": "datetime"})
     return df
 
+
 # passing arguments to average dataset
-parse = argparse.ArgumentParser(description="modify dataset")
+parse = argparse.ArgumentParser(description="summarize the dataset by average")
 parse.add_argument(
+    "-a",
     "--average_by",
     type=str,
+    required=False,
+    default="day",
+    dest="average_by",
     help="Average dataset by days/hours/no average",
-    choices=["days", "hours", "no avg"],
+    choices="month,week,day,hour,minute,none",
 )
+
 
 def calculate_average(average: "days/hours") -> "DataFrame":
     """This function is used for Average Temperature and movement of cow per days/per hours.
@@ -112,18 +118,21 @@ def calculate_average(average: "days/hours") -> "DataFrame":
         update_df = update_df.groupby([times.date])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
-        update_df.index.name = 'days'
+        update_df.index.name = "days"
     elif average == "hours":  # Average Temperature and movement of cow per hours
         update_df = update_df.groupby([times.date, times.hour])[
             ["temperature", "x_axix", "y_axix", "z_axix"]
         ].median()
         update_df.to_csv("./cow_disease_detection/data/from_fetch_data.csv", index=True)
-        update_df = pd.read_csv("./cow_disease_detection/data/from_fetch_data.csv",
-                  sep=',',
-                  names=["days", "hours", "temperature", "x_axix", "y_axix", "z_axix"])
+        update_df = pd.read_csv(
+            "./cow_disease_detection/data/from_fetch_data.csv",
+            sep=",",
+            names=["days", "hours", "temperature", "x_axix", "y_axix", "z_axix"],
+        )
         update_df.drop(update_df.head(1).index, inplace=True)
 
     return update_df
+
 
 if __name__ == "__main__":
     arg = parse.parse_args()
