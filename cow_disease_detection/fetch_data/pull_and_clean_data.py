@@ -182,7 +182,7 @@ def summarize_data(average_by: str, input_data: pd.DataFrame) -> pd.DataFrame:
     # reset index
     df_gb.reset_index(inplace=True)
     # save to disk
-    df_gb.to_csv("./cow_disease_detection/data/summarized_data.csv")
+    df_gb.to_csv("./cow_disease_detection/data/summarized_data.csv", index=False)
 
     return None  # update_df
 
