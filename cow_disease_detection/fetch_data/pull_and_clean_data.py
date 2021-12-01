@@ -56,7 +56,7 @@ def argument_parser():
 def get_data() -> pd.DataFrame:
     """This function pull data from google account
     Saves the data to:
-    ./cow_disease_detection/data/ 
+    ./cow_disease_detection/data/
     as raw_data.csv
     TODO: use secrets in the future to hide credentials
 
@@ -80,6 +80,22 @@ def get_data() -> pd.DataFrame:
     sh = gc.open_by_key(key)
     worksheet = sh.sheet1
     df = get_as_dataframe(worksheet)
+
+    # To pull historical data from a specific date
+    args = argument_parser()
+
+    # change datatypes
+    date = pd.to_datetime(df["date"])
+    date_2 = pd.to_datetime(args.pull_data_from_date)
+
+    # using a loop to get the first index value of the given date.
+    for index, value in enumerate(date):
+        if value == date_2:
+            df = df.iloc[
+                index:,
+            ]
+            break
+
     # save to disk
     df.to_csv("./cow_disease_detection/data/raw_data.csv", index=False)
     return df
@@ -88,13 +104,13 @@ def get_data() -> pd.DataFrame:
 # data preprocessing
 def data_preprocessing(input_data: pd.DataFrame) -> pd.DataFrame:
     """This function does the following processing on the fetch data:
-    1. Remove unnecessary columns. 
+    1. Remove unnecessary columns.
     2. Drop records where any feature is blank.
     3. Create a date_time column.
     4. Generate more time features such as year,month,week,day,hour,minute.
-    
+
     Output is saved to:
-    ./cow_disease_detection/data/ 
+    ./cow_disease_detection/data/
     as clean_data.csv
 
 
@@ -137,11 +153,11 @@ def data_preprocessing(input_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def summarize_data(average_by: str, input_data: pd.DataFrame) -> pd.DataFrame:
-    """This function summarizes temperature and movements of a 
+    """This function summarizes temperature and movements of a
     cow by taking the average (median) measurements.
 
     Output is saved to:
-    ./cow_disease_detection/data/ 
+    ./cow_disease_detection/data/
     as summarized_data.csv
 
     Parameters
@@ -150,7 +166,7 @@ def summarize_data(average_by: str, input_data: pd.DataFrame) -> pd.DataFrame:
         average movements and temperature. By default "hour"
         Possible options are
         "month", "week", "day", "hour", "minute"
-    
+
     input_data: pd.DataFrame
         processed data frame from the data_preprocessing ()
 
@@ -190,7 +206,8 @@ def summarize_data(average_by: str, input_data: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     arguments = argument_parser()
     data = get_data()
-    data = data_preprocessing(data,)
+    data = data_preprocessing(
+        data,
+    )
     data = summarize_data(arguments.average_by, data)
     del data
-
